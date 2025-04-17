@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YOLO & Raspberry Pi 사진 공유</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f5f5f5;
+    }
+
+    .hero {
+      background-color: #343a40;
+      padding: 50px 0;
+      text-align: center;
+    }
+
+    .hero h1, .hero p {
+      color: white;
+    }
+
+    .upload-box {
+      border: 2px dashed #aaa;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      color: #555;
+      margin-top: 30px;
+    }
+
+    .upload-box:hover {
+      background-color: #e9ecef;
+    }
+
+    #preview {
+      margin-top: 20px;
+      max-width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="hero">
+    <div class="container">
+      <h1 class="display-4">YOLO & Raspberry Pi 사진 공유</h1>
+      <p class="lead">AI 탐지와 라즈베리파이의 순간을 공유해요!</p>
+    </div>
+  </div>
+
+  <div class="container mt-4">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <a href="#" data-bs-toggle="modal" data-bs-target="#modalDrone">
+          <div class="card">
+            <img src="https://cdn.shopify.com/s/files/1/0174/1800/products/IMG_20201123_172501_1024x1024.jpg?v=1616787373" class="card-img-top" alt="Raspberry Pi Drone">
+            <div class="card-body">
+              <h5 class="card-title">드론에 장착된 라즈베리파이</h5>
+              <p class="card-text">야외 실험을 위한 드론+Pi 조합 세팅 사진입니다.</p>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="#" data-bs-toggle="modal" data-bs-target="#modalYolo">
+          <div class="card">
+            <img src="https://learnopencv.com/wp-content/uploads/2021/04/yolo-object-detection.png" class="card-img-top" alt="YOLO Detection">
+            <div class="card-body">
+              <h5 class="card-title">YOLO 객체 탐지 예시</h5>
+              <p class="card-text">실시간 객체 탐지 결과 예시 화면입니다.</p>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="#" data-bs-toggle="modal" data-bs-target="#modalCamera">
+          <div class="card">
+            <img src="https://cdn-shop.adafruit.com/640x480/5658-04.jpg" class="card-img-top" alt="Raspberry Pi Camera">
+            <div class="card-body">
+              <h5 class="card-title">Pi 카메라 모듈 설치</h5>
+              <p class="card-text">YOLO 입력용 라즈베리파이 카메라 세팅 모습입니다.</p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- 이미지 업로드 박스 -->
+    <div class="upload-box mt-5" onclick="document.getElementById('fileInput').click();">
+      여기를 클릭해 사진을 업로드해보세요!
+      <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="previewImage(event)">
+    </div>
+    <div id="preview-container" class="text-center">
+      <img id="preview" src="" alt="">
+    </div>
+  </div>
+
+  <!-- 모달: 드론 -->
+  <div class="modal fade" id="modalDrone" tabindex="-1" aria-labelledby="modalDroneLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalDroneLabel">드론에 장착된 라즈베리파이</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img src="https://cdn.shopify.com/s/files/1/0174/1800/products/IMG_20201123_172501_1024x1024.jpg?v=1616787373" class="img-fluid mb-3" alt="Drone Pi">
+          <p>라즈베리파이를 드론에 장착하여 실시간 영상 탐지 실험을 수행한 장면입니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 모달: YOLO -->
+  <div class="modal fade" id="modalYolo" tabindex="-1" aria-labelledby="modalYoloLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalYoloLabel">YOLO 객체 탐지 예시</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img src="https://blog.nerdfactory.ai/assets/images/posts/2021-07-01-You-Only-Look-Once-YOLO/yolo.png" class="img-fluid mb-3" alt="YOLO Example">
+          <p>YOLO는 빠르고 정확한 객체 탐지 모델입니다. 사람, 동물, 차량 등 다양한 객체를 탐지할 수 있어요.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 모달: 카메라 -->
+  <div class="modal fade" id="modalCamera" tabindex="-1" aria-labelledby="modalCameraLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalCameraLabel">Pi 카메라 모듈 설치</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img src="https://cdn-shop.adafruit.com/640x480/5658-04.jpg" class="img-fluid mb-3" alt="Pi Camera">
+          <p>Pi 카메라 모듈을 라즈베리파이에 연결하여 YOLO 탐지용 입력을 수집하는 모습입니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 스크립트 -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function previewImage(event) {
+      const reader = new FileReader();
+      reader.onload = function () {
+        document.getElementById('preview').src = reader.result;
+      }
+      reader.readAsDataURL(event.target.files[0]);
+    }
+  </script>
+
+</body>
+
+</html>

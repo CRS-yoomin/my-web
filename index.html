@@ -36,11 +36,15 @@
       max-width: 100%;
       height: auto;
       cursor: crosshair;
-      aspect-ratio: auto;
     }
     #labelList {
       font-size: 0.9em;
       text-align: center;
+    }
+    .card-img-top {
+      object-fit: cover;
+      width: 100%;
+      height: 250px;
     }
   </style>
 </head>
@@ -54,6 +58,36 @@
   </div>
 
   <div class="container mt-4">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card">
+          <img src="https://blog.kakaocdn.net/dn/bBAgLp/btrFBH8oolX/OLMpgiPcaCvMY4lm4EDeX1/img.png" class="card-img-top" alt="Raspberry Pi Drone">
+          <div class="card-body">
+            <h5 class="card-title">드론에 장착된 라즈베리파이</h5>
+            <p class="card-text">야외 실험을 위한 드론+Pi 조합 세팅 사진입니다.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <img src="https://www.nexreal.com/default/img/onepixel/images/ai1.jpg" class="card-img-top" alt="YOLO Detection">
+          <div class="card-body">
+            <h5 class="card-title">YOLO 객체 탐지 예시</h5>
+            <p class="card-text">실시간 객체 탐지 결과 예시 화면입니다.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <img src="https://cdn-shop.adafruit.com/640x480/5658-04.jpg" class="card-img-top" alt="Pi Camera">
+          <div class="card-body">
+            <h5 class="card-title">Pi 카메라 모듈 설치</h5>
+            <p class="card-text">YOLO 입력용 라즈베리파이 카메라 세팅 모습입니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="upload-box" onclick="document.getElementById('fileInput').click();">
       여기를 클릭해 사진을 업로드해보세요!
       <input type="file" id="fileInput" accept="image/*" style="display: none;">
@@ -75,6 +109,16 @@
     let startX, startY, currentX, currentY, isDrawing = false;
     let boxes = [];
 
+    function getMousePos(evt) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      return {
+        x: (evt.clientX - rect.left) * scaleX,
+        y: (evt.clientY - rect.top) * scaleY
+      };
+    }
+
     fileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -94,23 +138,26 @@
 
     canvas.addEventListener('mousedown', (e) => {
       if (!image.src) return;
-      startX = e.offsetX;
-      startY = e.offsetY;
+      const pos = getMousePos(e);
+      startX = pos.x;
+      startY = pos.y;
       isDrawing = true;
     });
 
     canvas.addEventListener('mousemove', (e) => {
       if (!isDrawing) return;
-      currentX = e.offsetX;
-      currentY = e.offsetY;
+      const pos = getMousePos(e);
+      currentX = pos.x;
+      currentY = pos.y;
       drawAll(true);
     });
 
     canvas.addEventListener('mouseup', (e) => {
       if (!isDrawing) return;
       isDrawing = false;
-      const endX = e.offsetX;
-      const endY = e.offsetY;
+      const pos = getMousePos(e);
+      const endX = pos.x;
+      const endY = pos.y;
       const x = Math.min(startX, endX);
       const y = Math.min(startY, endY);
       const width = Math.abs(endX - startX);

@@ -88,7 +88,7 @@
       </div>
     </div>
 
-    <!-- 업로드 -->
+    <!-- 업로드 박스 -->
     <div class="upload-box" onclick="document.getElementById('fileInput').click();">
       여기를 클릭해 사진을 업로드해보세요!
       <input type="file" id="fileInput" accept="image/*" style="display: none;">
@@ -101,7 +101,6 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
@@ -126,7 +125,7 @@
       const reader = new FileReader();
       reader.onload = function (event) {
         image = new Image();
-        image.crossOrigin = "anonymous"; // CORS 허용
+        image.crossOrigin = "anonymous";
         image.onload = function () {
           canvas.width = image.naturalWidth;
           canvas.height = image.naturalHeight;
@@ -207,12 +206,21 @@
 
     function downloadLabels() {
       if (boxes.length === 0) return alert('라벨이 없습니다.');
+
+      const labelMap = {};
+      let currentClass = 0;
+
       const yoloData = boxes.map(b => {
+        if (!(b.label in labelMap)) {
+          labelMap[b.label] = currentClass++;
+        }
+        const classId = labelMap[b.label];
+
         const cx = (b.x + b.width / 2) / canvas.width;
         const cy = (b.y + b.height / 2) / canvas.height;
         const w = b.width / canvas.width;
         const h = b.height / canvas.height;
-        return `0 ${cx.toFixed(6)} ${cy.toFixed(6)} ${w.toFixed(6)} ${h.toFixed(6)}`;
+        return `${classId} ${cx.toFixed(6)} ${cy.toFixed(6)} ${w.toFixed(6)} ${h.toFixed(6)}`;
       }).join('\n');
 
       const blob = new Blob([yoloData], { type: 'text/plain' });
@@ -220,6 +228,8 @@
       a.href = URL.createObjectURL(blob);
       a.download = "labels.txt";
       a.click();
+
+      console.log('클래스 매핑:', labelMap); // 콘솔 확인용
     }
   </script>
 </body>

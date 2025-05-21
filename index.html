@@ -99,6 +99,13 @@
       isDrawing = true;
     });
 
+    canvas.addEventListener('mousemove', (e) => {
+      if (!isDrawing) return;
+      currentX = e.offsetX;
+      currentY = e.offsetY;
+      drawAll(true);
+    });
+
     canvas.addEventListener('mouseup', (e) => {
       if (!isDrawing) return;
       isDrawing = false;
@@ -115,13 +122,6 @@
         drawAll();
         updateLabelList();
       }
-    });
-
-    canvas.addEventListener('mousemove', (e) => {
-      if (!isDrawing) return;
-      currentX = e.offsetX;
-      currentY = e.offsetY;
-      drawAll(true);
     });
 
     function drawAll(showTempBox = false) {

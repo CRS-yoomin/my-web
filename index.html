@@ -34,6 +34,9 @@
       display: block;
       margin: 20px auto;
       max-width: 100%;
+      height: auto;
+      cursor: crosshair;
+      aspect-ratio: auto;
     }
     #labelList {
       font-size: 0.9em;
@@ -105,6 +108,7 @@
       const y = Math.min(startY, endY);
       const width = Math.abs(endX - startX);
       const height = Math.abs(endY - startY);
+      if (width < 10 || height < 10) return alert("박스가 너무 작습니다!");
       const label = prompt('라벨을 입력하세요:', 'jellyfish');
       if (label) {
         boxes.push({ x, y, width, height, label });

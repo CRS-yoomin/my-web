@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="ko">
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,17 +9,14 @@
     body {
       background-color: #f5f5f5;
     }
-
     .hero {
       background-color: #343a40;
       padding: 50px 0;
       text-align: center;
     }
-
     .hero h1, .hero p {
       color: white;
     }
-
     .upload-box {
       border: 2px dashed #aaa;
       padding: 30px;
@@ -29,31 +25,23 @@
       color: #555;
       margin-top: 30px;
     }
-
     .upload-box:hover {
       background-color: #e9ecef;
     }
-
-    #preview {
-      margin-top: 20px;
-      max-width: 100%;
-    }
-
     canvas {
       border: 1px solid #000;
       display: block;
       margin: 20px auto;
       max-width: 100%;
     }
-
     #labelList {
       font-size: 0.9em;
       text-align: center;
     }
   </style>
 </head>
-
 <body>
+
   <div class="hero">
     <div class="container">
       <h1 class="display-4">YOLO & Raspberry Pi</h1>
@@ -62,18 +50,12 @@
   </div>
 
   <div class="container mt-4">
-    <div class="row g-4">
-      <!-- 카드 3개는 생략 -->
-    </div>
-
-    <!-- 업로드 박스 -->
-    <div class="upload-box mt-5" onclick="document.getElementById('fileInput').click();">
+    <div class="upload-box" onclick="document.getElementById('fileInput').click();">
       여기를 클릭해 사진을 업로드해보세요!
       <input type="file" id="fileInput" accept="image/*" style="display: none;">
     </div>
 
-    <!-- 라벨링용 캔버스 -->
-    <canvas id="canvas"></canvas>
+    <canvas id="canvas" width="640" height="480"></canvas>
     <div id="labelList"></div>
     <div class="text-center">
       <button class="btn btn-primary mt-3" onclick="downloadLabels()">YOLO 형식으로 저장</button>
@@ -88,10 +70,13 @@
     const fileInput = document.getElementById('fileInput');
     let image = new Image();
     let startX, startY, isDrawing = false;
+    let currentX, currentY;
     let boxes = [];
 
+    // 1. 이미지 업로드
     fileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
+      if (!file) return;
       const reader = new FileReader();
       reader.onload = function (event) {
         image.onload = function () {
@@ -100,13 +85,16 @@
           ctx.drawImage(image, 0, 0);
           boxes = [];
           document.getElementById('labelList').innerHTML = '';
-        }
+        };
         image.src = event.target.result;
-      }
+        console.log("✅ 이미지 불러오기 성공");
+      };
       reader.readAsDataURL(file);
     });
 
+    // 2. 라벨 박스 그리기
     canvas.addEventListener('mousedown', (e) => {
+      if (!image.src) return;
       startX = e.offsetX;
       startY = e.offsetY;
       isDrawing = true;
@@ -129,17 +117,36 @@
       }
     });
 
-    function drawAll() {
+    // 3. 실시간 박스 가이드 (선택)
+    canvas.addEventListener('mousemove', (e) => {
+      if (!isDrawing) return;
+      currentX = e.offsetX;
+      currentY = e.offsetY;
+      drawAll(true); // 임시 박스 포함해서 다시 그림
+    });
+
+    function drawAll(showTempBox = false) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(image, 0, 0);
       ctx.strokeStyle = 'red';
       ctx.fillStyle = 'red';
       ctx.lineWidth = 2;
       ctx.font = '14px Arial';
+
       boxes.forEach(box => {
         ctx.strokeRect(box.x, box.y, box.width, box.height);
         ctx.fillText(box.label, box.x + 4, box.y + 14);
       });
+
+      if (showTempBox) {
+        const x = Math.min(startX, currentX);
+        const y = Math.min(startY, currentY);
+        const width = Math.abs(currentX - startX);
+        const height = Math.abs(currentY - startY);
+        ctx.setLineDash([5, 3]);
+        ctx.strokeRect(x, y, width, height);
+        ctx.setLineDash([]);
+      }
     }
 
     function updateLabelList() {
@@ -156,12 +163,12 @@
         const w = b.width / canvas.width;
         const h = b.height / canvas.height;
         return `0 ${cx.toFixed(6)} ${cy.toFixed(6)} ${w.toFixed(6)} ${h.toFixed(6)}`;
-      }).join('\n');
+      }).join('\\n');
 
       const blob = new Blob([yoloData], { type: 'text/plain' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = "labels.txt";
+      a.download = \"labels.txt\";
       a.click();
     }
   </script>

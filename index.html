@@ -173,6 +173,24 @@
       }
     });
 
+    // ✅ 클릭으로 박스 삭제 기능 추가
+    canvas.addEventListener('click', (e) => {
+      if (isDrawing) return;
+      const pos = getMousePos(e);
+      const index = boxes.findIndex(b =>
+        pos.x >= b.x && pos.x <= b.x + b.width &&
+        pos.y >= b.y && pos.y <= b.y + b.height
+      );
+      if (index !== -1) {
+        const confirmDelete = confirm(`"${boxes[index].label}" 박스를 삭제할까요?`);
+        if (confirmDelete) {
+          boxes.splice(index, 1);
+          drawAll();
+          updateLabelList();
+        }
+      }
+    });
+
     function drawAll(showTempBox = false) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(image, 0, 0);
@@ -206,7 +224,6 @@
 
     function downloadLabels() {
       if (boxes.length === 0) return alert('라벨이 없습니다.');
-
       const labelMap = {};
       let currentClass = 0;
 
@@ -215,7 +232,6 @@
           labelMap[b.label] = currentClass++;
         }
         const classId = labelMap[b.label];
-
         const cx = (b.x + b.width / 2) / canvas.width;
         const cy = (b.y + b.height / 2) / canvas.height;
         const w = b.width / canvas.width;
@@ -228,8 +244,7 @@
       a.href = URL.createObjectURL(blob);
       a.download = "labels.txt";
       a.click();
-
-      console.log('클래스 매핑:', labelMap); // 콘솔 확인용
+      console.log('클래스 매핑:', labelMap);
     }
   </script>
 </body>

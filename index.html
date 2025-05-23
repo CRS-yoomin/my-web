@@ -65,7 +65,6 @@
   </div>
 
   <div class="container mt-4">
-    <!-- 카드 -->
     <div class="row g-4">
       <div class="col-md-4">
         <div class="card">
@@ -97,7 +96,6 @@
       </div>
     </div>
 
-    <!-- 업로드 박스 -->
     <div class="upload-box" onclick="document.getElementById('fileInput').click();">
       여기를 클릭해 사진을 업로드해보세요!
       <input type="file" id="fileInput" accept="image/*" style="display: none;">
@@ -181,17 +179,16 @@
       }
     });
 
-    // ❌ 버튼 클릭 시 삭제
     canvas.addEventListener('click', (e) => {
       if (isDrawing) return;
       const pos = getMousePos(e);
       for (let i = 0; i < boxes.length; i++) {
         const box = boxes[i];
-        const xX = box.x + box.width - 12;
-        const yX = box.y + 4;
+        const xX = box.x + box.width - 18;
+        const yX = box.y + 6;
         if (
-          pos.x >= xX && pos.x <= xX + 12 &&
-          pos.y >= yX - 12 && pos.y <= yX
+          pos.x >= xX && pos.x <= xX + 18 &&
+          pos.y >= yX - 14 && pos.y <= yX + 4
         ) {
           boxes.splice(i, 1);
           drawAll();
@@ -201,9 +198,8 @@
       }
     });
 
-    // 🖱️ 우클릭 시 삭제
     canvas.addEventListener('contextmenu', (e) => {
-      e.preventDefault(); // 브라우저 기본 우클릭 메뉴 막기
+      e.preventDefault();
       const pos = getMousePos(e);
       for (let i = 0; i < boxes.length; i++) {
         const box = boxes[i];
@@ -234,13 +230,14 @@
         ctx.strokeRect(box.x, box.y, box.width, box.height);
         ctx.fillText(box.label, box.x + 4, box.y + 14);
 
-        // ❌ X 버튼
-        const xX = box.x + box.width - 12;
-        const yX = box.y + 4;
+        // ❌ X 버튼 강조 (하얀 배경, 굵고 큼)
+        const xX = box.x + box.width - 18;
+        const yX = box.y + 6;
         ctx.fillStyle = 'white';
-        ctx.fillRect(xX, yX - 12, 12, 12);
+        ctx.fillRect(xX, yX - 14, 18, 18);
         ctx.fillStyle = 'red';
-        ctx.fillText('X', xX, yX);
+        ctx.font = 'bold 16px Arial';
+        ctx.fillText('X', xX + 3, yX);
       });
 
       if (showTempBox && isDrawing) {
@@ -263,7 +260,6 @@
 
     function downloadLabels() {
       if (boxes.length === 0) return alert('라벨이 없습니다.');
-
       const labelMap = {};
       let currentClass = 0;
 

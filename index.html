@@ -181,11 +181,10 @@
       }
     });
 
-    // ❌ X 버튼 클릭 시 삭제 기능
+    // ❌ 버튼 클릭 시 삭제
     canvas.addEventListener('click', (e) => {
       if (isDrawing) return;
       const pos = getMousePos(e);
-
       for (let i = 0; i < boxes.length; i++) {
         const box = boxes[i];
         const xX = box.x + box.width - 12;
@@ -197,6 +196,27 @@
           boxes.splice(i, 1);
           drawAll();
           updateLabelList();
+          return;
+        }
+      }
+    });
+
+    // 🖱️ 우클릭 시 삭제
+    canvas.addEventListener('contextmenu', (e) => {
+      e.preventDefault(); // 브라우저 기본 우클릭 메뉴 막기
+      const pos = getMousePos(e);
+      for (let i = 0; i < boxes.length; i++) {
+        const box = boxes[i];
+        if (
+          pos.x >= box.x && pos.x <= box.x + box.width &&
+          pos.y >= box.y && pos.y <= box.y + box.height
+        ) {
+          const confirmDelete = confirm(`"${box.label}" 박스를 삭제할까요?`);
+          if (confirmDelete) {
+            boxes.splice(i, 1);
+            drawAll();
+            updateLabelList();
+          }
           return;
         }
       }

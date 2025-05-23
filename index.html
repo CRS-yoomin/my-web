@@ -10,14 +10,18 @@
     body {
       background-color: #f5f5f5;
     }
+
     .hero {
       background-color: #343a40;
       padding: 50px 0;
       text-align: center;
     }
-    .hero h1, .hero p {
+
+    .hero h1,
+    .hero p {
       color: white;
     }
+
     .upload-box {
       border: 2px dashed #aaa;
       padding: 30px;
@@ -26,9 +30,11 @@
       color: #555;
       margin-top: 30px;
     }
+
     .upload-box:hover {
       background-color: #e9ecef;
     }
+
     canvas {
       border: 1px solid #000;
       display: block;
@@ -37,10 +43,12 @@
       height: auto;
       cursor: crosshair;
     }
+
     .card-img-top {
       height: 250px;
       object-fit: cover;
     }
+
     #labelList {
       font-size: 0.9em;
       text-align: center;
@@ -61,7 +69,8 @@
     <div class="row g-4">
       <div class="col-md-4">
         <div class="card">
-          <img src="https://blog.kakaocdn.net/dn/bBAgLp/btrFBH8oolX/OLMpgiPcaCvMY4lm4EDeX1/img.png" class="card-img-top" alt="Raspberry Pi Drone">
+          <img src="https://blog.kakaocdn.net/dn/bBAgLp/btrFBH8oolX/OLMpgiPcaCvMY4lm4EDeX1/img.png" class="card-img-top"
+            alt="Raspberry Pi Drone">
           <div class="card-body">
             <h5 class="card-title">드론에 장착된 라즈베리파이</h5>
             <p class="card-text">야외 실험을 위한 드론+Pi 조합 세팅 사진입니다.</p>
@@ -125,7 +134,6 @@
       const reader = new FileReader();
       reader.onload = function (event) {
         image = new Image();
-        image.crossOrigin = "anonymous";
         image.onload = function () {
           canvas.width = image.naturalWidth;
           canvas.height = image.naturalHeight;
@@ -173,20 +181,23 @@
       }
     });
 
-    // ✅ 클릭으로 박스 삭제 기능 추가
+    // ❌ X 버튼 클릭 시 삭제 기능
     canvas.addEventListener('click', (e) => {
       if (isDrawing) return;
       const pos = getMousePos(e);
-      const index = boxes.findIndex(b =>
-        pos.x >= b.x && pos.x <= b.x + b.width &&
-        pos.y >= b.y && pos.y <= b.y + b.height
-      );
-      if (index !== -1) {
-        const confirmDelete = confirm(`"${boxes[index].label}" 박스를 삭제할까요?`);
-        if (confirmDelete) {
-          boxes.splice(index, 1);
+
+      for (let i = 0; i < boxes.length; i++) {
+        const box = boxes[i];
+        const xX = box.x + box.width - 12;
+        const yX = box.y + 4;
+        if (
+          pos.x >= xX && pos.x <= xX + 12 &&
+          pos.y >= yX - 12 && pos.y <= yX
+        ) {
+          boxes.splice(i, 1);
           drawAll();
           updateLabelList();
+          return;
         }
       }
     });
@@ -199,9 +210,17 @@
       ctx.lineWidth = 2;
       ctx.font = '14px Arial';
 
-      boxes.forEach(box => {
+      boxes.forEach((box) => {
         ctx.strokeRect(box.x, box.y, box.width, box.height);
         ctx.fillText(box.label, box.x + 4, box.y + 14);
+
+        // ❌ X 버튼
+        const xX = box.x + box.width - 12;
+        const yX = box.y + 4;
+        ctx.fillStyle = 'white';
+        ctx.fillRect(xX, yX - 12, 12, 12);
+        ctx.fillStyle = 'red';
+        ctx.fillText('X', xX, yX);
       });
 
       if (showTempBox && isDrawing) {
@@ -224,6 +243,7 @@
 
     function downloadLabels() {
       if (boxes.length === 0) return alert('라벨이 없습니다.');
+
       const labelMap = {};
       let currentClass = 0;
 
@@ -244,8 +264,8 @@
       a.href = URL.createObjectURL(blob);
       a.download = "labels.txt";
       a.click();
-      console.log('클래스 매핑:', labelMap);
     }
   </script>
 </body>
+
 </html>

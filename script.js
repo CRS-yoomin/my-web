@@ -1,1 +1,37 @@
+body {
+  background-color: #f8f9fa;
+}
+
+canvas {
+  border: 1px solid #000;
+  display: block;
+  margin: 20px auto;
+  cursor: crosshair;
+}
+
+.upload-box {
+  border: 2px dashed #aaa;
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  color: #555;
+  margin: 30px auto;
+  max-width: 800px;
+  background-color: white;
+}
+
+.label-selector {
+  margin: 20px auto;
+  text-align: center;
+}
+
+#labelList {
+  text-align: center;
+  font-size: 0.9em;
+}
+
+.nav-buttons {
+  text-align: center;
+  margin-top: 20px;
+}
 

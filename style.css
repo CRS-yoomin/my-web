@@ -31,4 +31,6 @@ canvas {
 }
 
 .nav-buttons {
-  text
+  text-align: center;
+  margin-top: 20px;
+}

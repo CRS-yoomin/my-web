@@ -117,7 +117,7 @@ function drawAll(temp = false) {
 
 function updateLabelList() {
   document.getElementById('labelList').innerHTML = '<b>라벨 목록:</b><br>' +
-    boxes.map((b, i) => ${i + 1}) ${b.label} [x:${b.x.toFixed(1)}, y:${b.y.toFixed(1)}, w:${b.width.toFixed(1)}, h:${b.height.toFixed(1)}]).join('<br>');
+    boxes.map((b, i) => `${i + 1}) ${b.label} [x:${b.x.toFixed(1)}, y:${b.y.toFixed(1)}, w:${b.width.toFixed(1)}, h:${b.height.toFixed(1)}]`).join('<br>');
 }
 
 function downloadLabels() {
@@ -129,9 +129,9 @@ function downloadLabels() {
       const w = b.width / canvas.width;
       const h = b.height / canvas.height;
       const classId = Object.keys(labelColors).indexOf(b.label);
-      return ${classId} ${cx.toFixed(6)} ${cy.toFixed(6)} ${w.toFixed(6)} ${h.toFixed(6)};
+      return `${classId} ${cx.toFixed(6)} ${cy.toFixed(6)} ${w.toFixed(6)} ${h.toFixed(6)}`;
     });
-    return # image: ${imageFiles[idx].name}\n + lines.join('\n');
+    return `# image: ${imageFiles[idx].name}\n` + lines.join('\n');
   }).filter(Boolean).join('\n\n');
 
   const blob = new Blob([allText], { type: 'text/plain' });
@@ -140,6 +140,3 @@ function downloadLabels() {
   a.download = "labels_all.txt";
   a.click();
 }
-
-
-

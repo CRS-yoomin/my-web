@@ -1,143 +1,34 @@
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-const fileInput = document.getElementById('fileInput');
-const labelColors = { jellyfish: 'red', plastic: 'blue', net: 'green' };
-let image = new Image();
-let imageFiles = [], currentIndex = 0;
-let boxesPerImage = [], boxes = [];
-let startX, startY, currentX, currentY, isDrawing = false;
-
-fileInput.addEventListener('change', (e) => {
-  imageFiles = Array.from(e.target.files);
-  boxesPerImage = Array(imageFiles.length).fill(null).map(() => []);
-  currentIndex = 0;
-  loadImage(currentIndex);
-});
-
-function loadImage(index) {
-  if (!imageFiles[index]) return;
-  const reader = new FileReader();
-  reader.onload = (event) => {
-    image.src = event.target.result;
-  };
-  reader.readAsDataURL(imageFiles[index]);
+body {
+  background-color: #f8f9fa;
 }
 
-image.onload = () => {
-  canvas.width = image.naturalWidth;
-  canvas.height = image.naturalHeight;
-  boxes = boxesPerImage[currentIndex];
-  drawAll();
-  updateLabelList();
-};
-
-function prevImage() {
-  saveCurrentBoxes();
-  if (currentIndex > 0) {
-    currentIndex--;
-    loadImage(currentIndex);
-  }
+canvas {
+  border: 1px solid #000;
+  display: block;
+  margin: 20px auto;
+  cursor: crosshair;
 }
 
-function nextImage() {
-  saveCurrentBoxes();
-  if (currentIndex < imageFiles.length - 1) {
-    currentIndex++;
-    loadImage(currentIndex);
-  }
+.upload-box {
+  border: 2px dashed #aaa;
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  color: #555;
+  margin: 30px auto;
+  max-width: 800px;
+  background-color: white;
 }
 
-function saveCurrentBoxes() {
-  boxesPerImage[currentIndex] = boxes;
+.label-selector {
+  margin: 20px auto;
+  text-align: center;
 }
 
-canvas.addEventListener('mousedown', (e) => {
-  const pos = getMousePos(e);
-  startX = pos.x;
-  startY = pos.y;
-  isDrawing = true;
-});
-
-canvas.addEventListener('mousemove', (e) => {
-  if (!isDrawing) return;
-  const pos = getMousePos(e);
-  currentX = pos.x;
-  currentY = pos.y;
-  drawAll(true);
-});
-
-canvas.addEventListener('mouseup', (e) => {
-  isDrawing = false;
-  const pos = getMousePos(e);
-  const label = document.getElementById('selectedLabel').value;
-  const x = Math.min(startX, pos.x);
-  const y = Math.min(startY, pos.y);
-  const w = Math.abs(pos.x - startX);
-  const h = Math.abs(pos.y - startY);
-  if (w < 10 || h < 10) return;
-  boxes.push({ x, y, width: w, height: h, label });
-  drawAll();
-  updateLabelList();
-});
-
-canvas.addEventListener('contextmenu', (e) => {
-  e.preventDefault();
-  const pos = getMousePos(e);
-  const i = boxes.findIndex(b => pos.x >= b.x && pos.x <= b.x + b.width && pos.y >= b.y && pos.y <= b.y + b.height);
-  if (i !== -1) {
-    boxes.splice(i, 1);
-    drawAll();
-    updateLabelList();
-  }
-});
-
-function getMousePos(e) {
-  const rect = canvas.getBoundingClientRect();
-  return {
-    x: (e.clientX - rect.left) * (canvas.width / rect.width),
-    y: (e.clientY - rect.top) * (canvas.height / rect.height)
-  };
+#labelList {
+  text-align: center;
+  font-size: 0.9em;
 }
 
-function drawAll(temp = false) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(image, 0, 0);
-  boxes.forEach(b => {
-    ctx.strokeStyle = labelColors[b.label] || 'black';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(b.x, b.y, b.width, b.height);
-  });
-  if (temp && isDrawing) {
-    ctx.strokeStyle = 'gray';
-    ctx.setLineDash([4, 4]);
-    ctx.strokeRect(Math.min(startX, currentX), Math.min(startY, currentY), Math.abs(currentX - startX), Math.abs(currentY - startY));
-    ctx.setLineDash([]);
-  }
-}
-
-function updateLabelList() {
-  document.getElementById('labelList').innerHTML = '<b>라벨 목록:</b><br>' +
-    boxes.map((b, i) => `${i + 1}) ${b.label} [x:${b.x.toFixed(1)}, y:${b.y.toFixed(1)}, w:${b.width.toFixed(1)}, h:${b.height.toFixed(1)}]`).join('<br>');
-}
-
-function downloadLabels() {
-  const allText = boxesPerImage.map((imageBoxes, idx) => {
-    if (imageBoxes.length === 0) return '';
-    const lines = imageBoxes.map(b => {
-      const cx = (b.x + b.width / 2) / canvas.width;
-      const cy = (b.y + b.height / 2) / canvas.height;
-      const w = b.width / canvas.width;
-      const h = b.height / canvas.height;
-      const classId = Object.keys(labelColors).indexOf(b.label);
-      return `${classId} ${cx.toFixed(6)} ${cy.toFixed(6)} ${w.toFixed(6)} ${h.toFixed(6)}`;
-    });
-    return `# image: ${imageFiles[idx].name}\n` + lines.join('\n');
-  }).filter(Boolean).join('\n\n');
-
-  const blob = new Blob([allText], { type: 'text/plain' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = "labels_all.txt";
-  a.click();
-}
-
+.nav-buttons {
+  text

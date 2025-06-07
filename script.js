@@ -8,8 +8,7 @@ let imageFiles = [], currentIndex = 0;
 let boxesPerImage = [], boxes = [];
 
 let startX, startY, currentX, currentY, isDrawing = false;
-let selectedBoxIndex = -1;
-let resizing = false, resizeHandle = null;
+let selectedBoxIndex = -1, resizing = false, resizeHandle = null;
 const resizeHandleSize = 10;
 
 fileInput.addEventListener('change', (e) => {
@@ -17,6 +16,7 @@ fileInput.addEventListener('change', (e) => {
   boxesPerImage = imageFiles.map(() => []);
   currentIndex = 0;
   loadImage(currentIndex);
+  generateThumbnails();
 });
 
 function loadImage(index) {
@@ -32,6 +32,8 @@ image.onload = () => {
   boxes = boxesPerImage[currentIndex];
   drawAll();
   updateLabelList();
+  updateStatus();
+  highlightThumbnail();
 };
 
 function prevImage() {
@@ -52,6 +54,39 @@ function nextImage() {
 
 function saveCurrentBoxes() {
   boxesPerImage[currentIndex] = boxes;
+}
+
+function updateStatus() {
+  document.getElementById('imageStatus').innerText = `이미지 ${currentIndex + 1} / ${imageFiles.length}`;
+}
+
+function generateThumbnails() {
+  const container = document.getElementById('thumbnailContainer') || document.createElement('div');
+  container.id = 'thumbnailContainer';
+  container.className = 'thumbnail-container mt-4';
+  document.body.appendChild(container);
+  container.innerHTML = '';
+  imageFiles.forEach((file, index) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.addEventListener('click', () => {
+        saveCurrentBoxes();
+        currentIndex = index;
+        loadImage(currentIndex);
+      });
+      container.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function highlightThumbnail() {
+  const thumbs = document.querySelectorAll('#thumbnailContainer img');
+  thumbs.forEach((img, i) => {
+    img.classList.toggle('active', i === currentIndex);
+  });
 }
 
 canvas.addEventListener('mousedown', (e) => {

@@ -11,7 +11,8 @@
   <div class="container py-4">
     <h1 class="text-center mb-4">🧠 YOLO 라벨링 툴 (다중 이미지)</h1>
 
-    <div class="label-selector text-center">
+    <!-- 라벨 선택 -->
+    <div class="label-selector">
       <label for="selectedLabel" class="me-2 fw-bold">라벨 선택:</label>
       <select id="selectedLabel" class="form-select d-inline-block w-auto">
         <option value="jellyfish">jellyfish</option>
@@ -20,20 +21,26 @@
       </select>
     </div>
 
+    <!-- 이미지 업로드 -->
     <div class="upload-box mt-3" onclick="document.getElementById('fileInput').click();">
-      여기를 클릭해 여러 이미지 업로드 (최대 20장 권장)
+      여기를 클릭해 여러 이미지 업로드 
       <input type="file" id="fileInput" accept="image/*" multiple style="display:none" />
     </div>
 
+    <!-- 캔버스 및 상태 -->
     <canvas id="canvas"></canvas>
     <p class="text-center mt-2" id="imageStatus">이미지 0 / 0</p>
     <div id="labelList"></div>
 
+    <!-- 내비게이션 버튼 -->
     <div class="nav-buttons mt-3">
       <button class="btn btn-outline-secondary me-2" onclick="prevImage()">이전</button>
       <button class="btn btn-outline-secondary me-2" onclick="nextImage()">다음</button>
       <button class="btn btn-primary" onclick="downloadLabels()">YOLO 형식 저장</button>
     </div>
+
+    <!-- 썸네일 -->
+    <div id="thumbnailContainer" class="thumbnail-container mt-4"></div>
 
     <!-- 예시 이미지 섹션 -->
     <div class="example-section mt-5">
@@ -46,6 +53,7 @@
     </div>
   </div>
 
+  <!-- 스크립트 -->
   <script src="script.js"></script>
 </body>
 </html>

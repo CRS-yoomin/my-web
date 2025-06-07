@@ -24,6 +24,7 @@ canvas {
 
 .label-selector {
   margin-bottom: 20px;
+  text-align: center;
 }
 
 #labelList {
@@ -34,6 +35,7 @@ canvas {
 
 .nav-buttons {
   text-align: center;
+  margin-top: 20px;
 }
 
 .example-section {
@@ -41,13 +43,16 @@ canvas {
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  margin-top: 40px;
 }
 
+/* 예시 이미지 슬라이드 스타일 */
 .example-images {
   display: flex;
-  justify-content: center;
   gap: 12px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 10px;
 }
 
 .example-images img {
@@ -56,9 +61,34 @@ canvas {
   border-radius: 10px;
   border: 1px solid #ccc;
   transition: transform 0.3s;
+  flex: 0 0 auto;
 }
 
 .example-images img:hover {
   transform: scale(1.05);
   border-color: #007bff;
+}
+
+/* 썸네일 컨테이너 */
+.thumbnail-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.thumbnail-container img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border: 2px solid transparent;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+.thumbnail-container img.active {
+  border-color: #0d6efd;
+  transform: scale(1.1);
 }

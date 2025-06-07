@@ -2,14 +2,19 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const fileInput = document.getElementById('fileInput');
 const labelColors = { jellyfish: 'red', plastic: 'blue', net: 'green' };
+
 let image = new Image();
 let imageFiles = [], currentIndex = 0;
 let boxesPerImage = [], boxes = [];
+
 let startX, startY, currentX, currentY, isDrawing = false;
+let selectedBoxIndex = -1;
+let resizing = false, resizeHandle = null;
+const resizeHandleSize = 10;
 
 fileInput.addEventListener('change', (e) => {
   imageFiles = Array.from(e.target.files);
-  boxesPerImage = Array(imageFiles.length).fill(null).map(() => []);
+  boxesPerImage = imageFiles.map(() => []);
   currentIndex = 0;
   loadImage(currentIndex);
 });
@@ -17,9 +22,7 @@ fileInput.addEventListener('change', (e) => {
 function loadImage(index) {
   if (!imageFiles[index]) return;
   const reader = new FileReader();
-  reader.onload = (event) => {
-    image.src = event.target.result;
-  };
+  reader.onload = (e) => image.src = e.target.result;
   reader.readAsDataURL(imageFiles[index]);
 }
 
@@ -53,20 +56,54 @@ function saveCurrentBoxes() {
 
 canvas.addEventListener('mousedown', (e) => {
   const pos = getMousePos(e);
+  selectedBoxIndex = boxes.findIndex(b =>
+    pos.x >= b.x && pos.x <= b.x + b.width &&
+    pos.y >= b.y && pos.y <= b.y + b.height);
+
+  if (selectedBoxIndex !== -1) {
+    const box = boxes[selectedBoxIndex];
+    resizeHandle = getResizeHandle(pos, box);
+    if (resizeHandle) {
+      resizing = true;
+      return;
+    }
+  }
+
+  isDrawing = true;
   startX = pos.x;
   startY = pos.y;
-  isDrawing = true;
 });
 
 canvas.addEventListener('mousemove', (e) => {
-  if (!isDrawing) return;
   const pos = getMousePos(e);
-  currentX = pos.x;
-  currentY = pos.y;
-  drawAll(true);
+  if (resizing && selectedBoxIndex !== -1) {
+    const b = boxes[selectedBoxIndex];
+    switch (resizeHandle) {
+      case 'tl': b.width += b.x - pos.x; b.height += b.y - pos.y; b.x = pos.x; b.y = pos.y; break;
+      case 'tr': b.width = pos.x - b.x; b.height += b.y - pos.y; b.y = pos.y; break;
+      case 'bl': b.width += b.x - pos.x; b.x = pos.x; b.height = pos.y - b.y; break;
+      case 'br': b.width = pos.x - b.x; b.height = pos.y - b.y; break;
+    }
+    drawAll();
+    updateLabelList();
+    return;
+  }
+
+  if (isDrawing) {
+    currentX = pos.x;
+    currentY = pos.y;
+    drawAll(true);
+  }
 });
 
 canvas.addEventListener('mouseup', (e) => {
+  if (resizing) {
+    resizing = false;
+    resizeHandle = null;
+    return;
+  }
+
+  if (!isDrawing) return;
   isDrawing = false;
   const pos = getMousePos(e);
   const label = document.getElementById('selectedLabel').value;
@@ -83,7 +120,9 @@ canvas.addEventListener('mouseup', (e) => {
 canvas.addEventListener('contextmenu', (e) => {
   e.preventDefault();
   const pos = getMousePos(e);
-  const i = boxes.findIndex(b => pos.x >= b.x && pos.x <= b.x + b.width && pos.y >= b.y && pos.y <= b.y + b.height);
+  const i = boxes.findIndex(b =>
+    pos.x >= b.x && pos.x <= b.x + b.width &&
+    pos.y >= b.y && pos.y <= b.y + b.height);
   if (i !== -1) {
     boxes.splice(i, 1);
     drawAll();
@@ -99,25 +138,54 @@ function getMousePos(e) {
   };
 }
 
+function getResizeHandle(pos, box) {
+  const handles = {
+    tl: { x: box.x, y: box.y },
+    tr: { x: box.x + box.width, y: box.y },
+    bl: { x: box.x, y: box.y + box.height },
+    br: { x: box.x + box.width, y: box.y + box.height }
+  };
+  for (let key in handles) {
+    const h = handles[key];
+    if (Math.abs(pos.x - h.x) < resizeHandleSize && Math.abs(pos.y - h.y) < resizeHandleSize) {
+      return key;
+    }
+  }
+  return null;
+}
+
+function drawResizeHandle(x, y) {
+  ctx.fillStyle = 'black';
+  ctx.fillRect(x - resizeHandleSize / 2, y - resizeHandleSize / 2, resizeHandleSize, resizeHandleSize);
+}
+
 function drawAll(temp = false) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(image, 0, 0);
-  boxes.forEach(b => {
+  boxes.forEach((b) => {
     ctx.strokeStyle = labelColors[b.label] || 'black';
     ctx.lineWidth = 2;
     ctx.strokeRect(b.x, b.y, b.width, b.height);
+    drawResizeHandle(b.x, b.y);
+    drawResizeHandle(b.x + b.width, b.y);
+    drawResizeHandle(b.x, b.y + b.height);
+    drawResizeHandle(b.x + b.width, b.y + b.height);
   });
+
   if (temp && isDrawing) {
     ctx.strokeStyle = 'gray';
     ctx.setLineDash([4, 4]);
-    ctx.strokeRect(Math.min(startX, currentX), Math.min(startY, currentY), Math.abs(currentX - startX), Math.abs(currentY - startY));
+    ctx.strokeRect(Math.min(startX, currentX), Math.min(startY, currentY),
+      Math.abs(currentX - startX), Math.abs(currentY - startY));
     ctx.setLineDash([]);
   }
 }
 
 function updateLabelList() {
-  document.getElementById('labelList').innerHTML = '<b>라벨 목록:</b><br>' +
-    boxes.map((b, i) => `${i + 1}) ${b.label} [x:${b.x.toFixed(1)}, y:${b.y.toFixed(1)}, w:${b.width.toFixed(1)}, h:${b.height.toFixed(1)}]`).join('<br>');
+  document.getElementById('labelList').innerHTML =
+    '<b>라벨 목록:</b><br>' + boxes.map((b, i) =>
+      `${i + 1}) ${b.label} [x:${b.x.toFixed(1)}, y:${b.y.toFixed(1)}, w:${b.width.toFixed(1)}, h:${b.height.toFixed(1)}]`
+    ).join('<br>');
 }
 
 function downloadLabels() {

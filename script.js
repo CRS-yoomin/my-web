@@ -230,13 +230,14 @@ function updateLabelList() {
 }
 
 function downloadLabels() {
+  saveCurrentBoxes(); // 현재 이미지의 박스 저장 먼저 수행
   const zip = new JSZip();
   const imgFolder = zip.folder("images");
   const labelFolder = zip.folder("labels");
 
   imageFiles.forEach((file, idx) => {
     const imageBoxes = boxesPerImage[idx];
-    if (imageBoxes.length === 0) return;
+    if (!imageBoxes || imageBoxes.length === 0) return;
 
     imgFolder.file(file.name, file);
 

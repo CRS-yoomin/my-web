@@ -223,9 +223,20 @@ function updateLabelList() {
     ).join('<br>');
 }
 
+// ✅ YOLO 형식 라벨 및 이미지 ZIP 저장 함수
 function downloadLabels() {
-  const allText = boxesPerImage.map((imageBoxes, idx) => {
-    if (imageBoxes.length === 0) return '';
+  const zip = new JSZip();
+  const imgFolder = zip.folder("images");
+  const labelFolder = zip.folder("labels");
+
+  imageFiles.forEach((file, idx) => {
+    const imageBoxes = boxesPerImage[idx];
+    if (imageBoxes.length === 0) return;
+
+    // 이미지 원본 추가
+    imgFolder.file(file.name, file);
+
+    // YOLO 라벨 텍스트 생성
     const lines = imageBoxes.map(b => {
       const cx = (b.x + b.width / 2) / canvas.width;
       const cy = (b.y + b.height / 2) / canvas.height;
@@ -234,12 +245,16 @@ function downloadLabels() {
       const classId = Object.keys(labelColors).indexOf(b.label);
       return `${classId} ${cx.toFixed(6)} ${cy.toFixed(6)} ${w.toFixed(6)} ${h.toFixed(6)}`;
     });
-    return `# image: ${imageFiles[idx].name}\n` + lines.join('\n');
-  }).filter(Boolean).join('\n\n');
 
-  const blob = new Blob([allText], { type: 'text/plain' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = "labels_all.txt";
-  a.click();
+    const txtName = file.name.replace(/\.[^/.]+$/, ".txt");
+    labelFolder.file(txtName, lines.join('\n'));
+  });
+
+  // ZIP 생성 및 다운로드
+  zip.generateAsync({ type: "blob" }).then(blob => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "YOLO_labels.zip";
+    a.click();
+  });
 }

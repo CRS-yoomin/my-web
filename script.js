@@ -229,28 +229,56 @@ function updateLabelList() {
     ).join('<br>');
 }
 
-function downloadLabels() {
+async function downloadLabels() {
   saveCurrentBoxes();
   const zip = new JSZip();
   const imgFolder = zip.folder("images");
   const labelFolder = zip.folder("labels");
 
-  imageFiles.forEach((file, idx) => {
+  for (let idx = 0; idx < imageFiles.length; idx++) {
     const imageBoxes = boxesPerImage[idx];
-    imgFolder.file(file.name, file);
 
-    const lines = (imageBoxes || []).map(b => {
-      const cx = (b.x + b.width / 2) / canvas.width;
-      const cy = (b.y + b.height / 2) / canvas.height;
-      const w = b.width / canvas.width;
-      const h = b.height / canvas.height;
-      const classId = Object.keys(labelColors).indexOf(b.label);
-      return `${classId} ${cx.toFixed(6)} ${cy.toFixed(6)} ${w.toFixed(6)} ${h.toFixed(6)}`;
+    await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        image.src = e.target.result;
+        image.onload = async () => {
+          canvas.width = image.naturalWidth;
+          canvas.height = image.naturalHeight;
+          ctx.drawImage(image, 0, 0);
+
+          const imgDataURL = canvas.toDataURL("image/png");
+          const imgBlob = await (await fetch(imgDataURL)).blob();
+          const imgName = imageFiles[idx].name.replace(/\.[^/.]+$/, ".png");
+          imgFolder.file(imgName, imgBlob);
+
+          const lines = (imageBoxes || []).map(b => {
+            const cx = (b.x + b.width / 2) / canvas.width;
+            const cy = (b.y + b.height / 2) / canvas.height;
+            const w = b.width / canvas.width;
+            const h = b.height / canvas.height;
+            const classId = Object.keys(labelColors).indexOf(b.label);
+            return `${classId} ${cx.toFixed(6)} ${cy.toFixed(6)} ${w.toFixed(6)} ${h.toFixed(6)}`;
+          });
+
+          const txtName = imgName.replace(".png", ".txt");
+          labelFolder.file(txtName, lines.join('\n'));
+          resolve();
+        };
+      };
+      reader.readAsDataURL(imageFiles[idx]);
     });
+  }
 
-    const txtName = file.name.replace(/\.[^/.]+$/, ".txt");
-    labelFolder.file(txtName, lines.join('\n'));
-  });
+  const yamlContent = `
+path: ./
+train: images
+val: images
+
+names:
+${Object.keys(labelColors).map((key, idx) => `  ${idx}: ${key}`).join('\n')}
+  `.trim();
+  zip.file("data.yaml", yamlContent);
 
   zip.generateAsync({ type: "blob" }).then(blob => {
     const a = document.createElement("a");

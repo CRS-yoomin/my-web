@@ -1,7 +1,5 @@
 body {
   background-color: #f8f9fa;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
 }
 
 canvas {
@@ -11,8 +9,6 @@ canvas {
   cursor: crosshair;
   max-width: 100%;
   height: auto;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
 }
 
 .upload-box {
@@ -23,13 +19,7 @@ canvas {
   color: #555;
   background-color: white;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: background-color 0.3s, box-shadow 0.3s;
-}
-
-.upload-box:hover {
-  background-color: #f1f1f1;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .label-selector {
@@ -41,23 +31,11 @@ canvas {
   text-align: center;
   font-size: 0.9em;
   margin-top: 10px;
-  background: #fff;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .nav-buttons {
   text-align: center;
   margin-top: 20px;
-}
-
-.nav-buttons .btn {
-  min-width: 100px;
-  font-weight: 500;
 }
 
 .example-section {
@@ -68,14 +46,12 @@ canvas {
   margin-top: 40px;
 }
 
-/* 예시 이미지 슬라이드 스타일 */
 .example-images {
   display: flex;
   gap: 12px;
   flex-wrap: nowrap;
   overflow-x: auto;
   padding-bottom: 10px;
-  justify-content: center;
 }
 
 .example-images img {
@@ -83,7 +59,7 @@ canvas {
   height: auto;
   border-radius: 10px;
   border: 1px solid #ccc;
-  transition: transform 0.3s, border-color 0.3s;
+  transition: transform 0.3s;
   flex: 0 0 auto;
 }
 
@@ -92,7 +68,6 @@ canvas {
   border-color: #007bff;
 }
 
-/* 썸네일 컨테이너 */
 .thumbnail-container {
   display: flex;
   justify-content: center;
@@ -108,7 +83,7 @@ canvas {
   border: 2px solid transparent;
   cursor: pointer;
   border-radius: 6px;
-  transition: border-color 0.2s, transform 0.2s;
+  transition: 0.2s;
 }
 
 .thumbnail-container img.active {

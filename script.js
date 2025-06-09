@@ -53,7 +53,7 @@ function nextImage() {
 }
 
 function saveCurrentBoxes() {
-  boxesPerImage[currentIndex] = boxes;
+  boxesPerImage[currentIndex] = [...boxes];
 }
 
 function updateStatus() {
@@ -237,11 +237,9 @@ function downloadLabels() {
 
   imageFiles.forEach((file, idx) => {
     const imageBoxes = boxesPerImage[idx];
-    if (!imageBoxes || imageBoxes.length === 0) return;
-
     imgFolder.file(file.name, file);
 
-    const lines = imageBoxes.map(b => {
+    const lines = (imageBoxes || []).map(b => {
       const cx = (b.x + b.width / 2) / canvas.width;
       const cy = (b.y + b.height / 2) / canvas.height;
       const w = b.width / canvas.width;

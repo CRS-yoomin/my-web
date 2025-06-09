@@ -189,27 +189,33 @@ function getResizeHandle(pos, box) {
   return null;
 }
 
-function drawResizeHandle(x, y) {
+function drawResizeHandle(x, y, scale = 1) {
+  const size = resizeHandleSize / scale;
   ctx.fillStyle = 'black';
-  ctx.fillRect(x - resizeHandleSize / 2, y - resizeHandleSize / 2, resizeHandleSize, resizeHandleSize);
+  ctx.fillRect(x - size / 2, y - size / 2, size, size);
 }
 
 function drawAll(temp = false) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(image, 0, 0);
+  const scaleX = canvas.clientWidth / canvas.width;
+  const scaleY = canvas.clientHeight / canvas.height;
+  const scale = Math.min(scaleX, scaleY);
+
   boxes.forEach((b) => {
     ctx.strokeStyle = labelColors[b.label] || 'black';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2 / scale;
     ctx.strokeRect(b.x, b.y, b.width, b.height);
-    drawResizeHandle(b.x, b.y);
-    drawResizeHandle(b.x + b.width, b.y);
-    drawResizeHandle(b.x, b.y + b.height);
-    drawResizeHandle(b.x + b.width, b.y + b.height);
+    drawResizeHandle(b.x, b.y, scale);
+    drawResizeHandle(b.x + b.width, b.y, scale);
+    drawResizeHandle(b.x, b.y + b.height, scale);
+    drawResizeHandle(b.x + b.width, b.y + b.height, scale);
   });
 
   if (temp && isDrawing) {
     ctx.strokeStyle = 'gray';
     ctx.setLineDash([4, 4]);
+    ctx.lineWidth = 1 / scale;
     ctx.strokeRect(Math.min(startX, currentX), Math.min(startY, currentY),
       Math.abs(currentX - startX), Math.abs(currentY - startY));
     ctx.setLineDash([]);
@@ -223,7 +229,6 @@ function updateLabelList() {
     ).join('<br>');
 }
 
-// ✅ YOLO 형식 라벨 및 이미지 ZIP 저장 함수
 function downloadLabels() {
   const zip = new JSZip();
   const imgFolder = zip.folder("images");
@@ -233,10 +238,8 @@ function downloadLabels() {
     const imageBoxes = boxesPerImage[idx];
     if (imageBoxes.length === 0) return;
 
-    // 이미지 원본 추가
     imgFolder.file(file.name, file);
 
-    // YOLO 라벨 텍스트 생성
     const lines = imageBoxes.map(b => {
       const cx = (b.x + b.width / 2) / canvas.width;
       const cy = (b.y + b.height / 2) / canvas.height;
@@ -250,7 +253,6 @@ function downloadLabels() {
     labelFolder.file(txtName, lines.join('\n'));
   });
 
-  // ZIP 생성 및 다운로드
   zip.generateAsync({ type: "blob" }).then(blob => {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);

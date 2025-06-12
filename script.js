@@ -1,7 +1,15 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const fileInput = document.getElementById('fileInput');
-const labelColors = { Aurelia aurtia: 'red', Cyanea nozaki: 'blue', Chrysaora pacifica: 'green' };
+
+// ✅ 라벨 색상 정의 (Sargassum 추가)
+const labelColors = {
+  "Aurelia aurtia": "red",
+  "Cyanea nozaki": "blue",
+  "Chrysaora pacifica": "green",
+  "Sargassum": "orange"
+};
+const labelKeys = Object.keys(labelColors);
 
 let image = new Image();
 let imageFiles = [], currentIndex = 0;
@@ -61,10 +69,7 @@ function updateStatus() {
 }
 
 function generateThumbnails() {
-  const container = document.getElementById('thumbnailContainer') || document.createElement('div');
-  container.id = 'thumbnailContainer';
-  container.className = 'thumbnail-container mt-4';
-  document.body.appendChild(container);
+  const container = document.getElementById('thumbnailContainer');
   container.innerHTML = '';
   imageFiles.forEach((file, index) => {
     const reader = new FileReader();
@@ -257,7 +262,7 @@ async function downloadLabels() {
             const cy = (b.y + b.height / 2) / canvas.height;
             const w = b.width / canvas.width;
             const h = b.height / canvas.height;
-            const classId = Object.keys(labelColors).indexOf(b.label);
+            const classId = labelKeys.indexOf(b.label);
             return `${classId} ${cx.toFixed(6)} ${cy.toFixed(6)} ${w.toFixed(6)} ${h.toFixed(6)}`;
           });
 
@@ -276,8 +281,8 @@ train: images
 val: images
 
 names:
-${Object.keys(labelColors).map((key, idx) => `  ${idx}: ${key}`).join('\n')}
-  `.trim();
+${labelKeys.map((key, idx) => `  ${idx}: ${key}`).join('\n')}
+`.trim();
   zip.file("data.yaml", yamlContent);
 
   zip.generateAsync({ type: "blob" }).then(blob => {

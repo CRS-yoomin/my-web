@@ -2,7 +2,7 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const fileInput = document.getElementById('fileInput');
 
-// ✅ 라벨 색상 정의 (Sargassum 추가)
+// ✅ 라벨 색상 정의
 const labelColors = {
   "Aurelia aurtia": "red",
   "Cyanea nozaki": "blue",
@@ -19,6 +19,7 @@ let startX, startY, currentX, currentY, isDrawing = false;
 let selectedBoxIndex = -1, resizing = false, resizeHandle = null;
 const resizeHandleSize = 10;
 
+// ✅ 이미지 업로드
 fileInput.addEventListener('change', (e) => {
   imageFiles = Array.from(e.target.files);
   boxesPerImage = imageFiles.map(() => []);
@@ -27,6 +28,7 @@ fileInput.addEventListener('change', (e) => {
   generateThumbnails();
 });
 
+// ✅ 이미지 로드
 function loadImage(index) {
   if (!imageFiles[index]) return;
   const reader = new FileReader();
@@ -68,6 +70,7 @@ function updateStatus() {
   document.getElementById('imageStatus').innerText = `이미지 ${currentIndex + 1} / ${imageFiles.length}`;
 }
 
+// ✅ 썸네일 생성
 function generateThumbnails() {
   const container = document.getElementById('thumbnailContainer');
   container.innerHTML = '';
@@ -94,6 +97,7 @@ function highlightThumbnail() {
   });
 }
 
+// ✅ 캔버스 라벨링
 canvas.addEventListener('mousedown', (e) => {
   const pos = getMousePos(e);
   selectedBoxIndex = boxes.findIndex(b =>
@@ -234,6 +238,7 @@ function updateLabelList() {
     ).join('<br>');
 }
 
+// ✅ YOLO 형식으로 빠르게 저장 (최적화 버전)
 async function downloadLabels() {
   saveCurrentBoxes();
   const zip = new JSZip();
@@ -242,36 +247,35 @@ async function downloadLabels() {
 
   for (let idx = 0; idx < imageFiles.length; idx++) {
     const imageBoxes = boxesPerImage[idx];
+    const originalBlob = imageFiles[idx];
+    const imgName = originalBlob.name;
+    imgFolder.file(imgName, originalBlob);
+
+    const tempImg = new Image();
+    const reader = new FileReader();
 
     await new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        image.src = e.target.result;
-        image.onload = async () => {
-          canvas.width = image.naturalWidth;
-          canvas.height = image.naturalHeight;
-          ctx.drawImage(image, 0, 0);
-
-          const imgDataURL = canvas.toDataURL("image/png");
-          const imgBlob = await (await fetch(imgDataURL)).blob();
-          const imgName = imageFiles[idx].name.replace(/\.[^/.]+$/, ".png");
-          imgFolder.file(imgName, imgBlob);
+      reader.onload = (e) => {
+        tempImg.src = e.target.result;
+        tempImg.onload = () => {
+          const w = tempImg.naturalWidth;
+          const h = tempImg.naturalHeight;
 
           const lines = (imageBoxes || []).map(b => {
-            const cx = (b.x + b.width / 2) / canvas.width;
-            const cy = (b.y + b.height / 2) / canvas.height;
-            const w = b.width / canvas.width;
-            const h = b.height / canvas.height;
+            const cx = (b.x + b.width / 2) / w;
+            const cy = (b.y + b.height / 2) / h;
+            const bw = b.width / w;
+            const bh = b.height / h;
             const classId = labelKeys.indexOf(b.label);
-            return `${classId} ${cx.toFixed(6)} ${cy.toFixed(6)} ${w.toFixed(6)} ${h.toFixed(6)}`;
+            return `${classId} ${cx.toFixed(6)} ${cy.toFixed(6)} ${bw.toFixed(6)} ${bh.toFixed(6)}`;
           });
 
-          const txtName = imgName.replace(".png", ".txt");
+          const txtName = imgName.replace(/\.[^/.]+$/, ".txt");
           labelFolder.file(txtName, lines.join('\n'));
           resolve();
         };
       };
-      reader.readAsDataURL(imageFiles[idx]);
+      reader.readAsDataURL(originalBlob);
     });
   }
 

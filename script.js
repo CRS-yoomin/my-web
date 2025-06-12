@@ -1,7 +1,7 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const fileInput = document.getElementById('fileInput');
-const labelColors = { jellyfish: 'red', plastic: 'blue', net: 'green' };
+const labelColors = { Aurelia aurtia: 'red', Cyanea nozaki: 'blue', Chrysaora pacifica: 'green' };
 
 let image = new Image();
 let imageFiles = [], currentIndex = 0;

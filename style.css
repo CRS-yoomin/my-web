@@ -104,7 +104,7 @@ canvas {
   transform: scale(1.1);
 }
 
-/* 🧠 심볼 + 타이틀 정렬 (추가된 부분) */
+/* 심볼 + 타이틀 정렬 (추가된 부분) */
 .app-title {
   display: flex;
   align-items: center;

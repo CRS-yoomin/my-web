@@ -67,11 +67,14 @@ canvas {
 .example-images img {
   width: 120px;
   height: auto;
+  max-height: 180px;
+  object-fit: cover;
   border-radius: 10px;
   border: 1px solid #ccc;
   transition: transform 0.3s;
   flex: 0 0 auto;
 }
+
 
 .example-images img:hover {
   transform: scale(1.05);

@@ -10,55 +10,83 @@
     .thumbnail-container img.active {
       border: 3px solid #007bff;
     }
+    .thumbnail-container img {
+      width: 60px;
+      height: auto;
+      margin: 5px;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+    .upload-box {
+      border: 2px dashed #aaa;
+      padding: 20px;
+      text-align: center;
+      background-color: #fefefe;
+      cursor: pointer;
+      border-radius: 8px;
+      color: #666;
+    }
+    canvas {
+      border: 1px solid #333;
+      display: block;
+      margin: 0 auto;
+      max-width: 100%;
+      height: auto;
+    }
+    .example-section img {
+      border: 1px solid #ccc;
+    }
   </style>
 </head>
 <body>
   <div class="container py-4">
-    <h1 class="text-center mb-4"> jellyfish YOLO labeling</h1>
+    <h1 class="text-center mb-4">Jellyfish YOLO Labeling Tool</h1>
 
     <!-- 라벨 선택 -->
-    <div class="label-selector">
+    <div class="label-selector text-center mb-3">
       <label for="selectedLabel" class="me-2 fw-bold">라벨 선택:</label>
       <select id="selectedLabel" class="form-select d-inline-block w-auto">
         <option value="Aurelia aurtia">Aurelia aurtia</option>
         <option value="Cyanea nozaki">Cyanea nozaki</option>
         <option value="Chrysaora pacifica">Chrysaora pacifica</option>
+        <option value="Sargassum">Sargassum</option> <!-- ✅ 철자 수정 -->
       </select>
     </div>
 
     <!-- 이미지 업로드 -->
     <div class="upload-box mt-3" onclick="document.getElementById('fileInput').click();">
-      여기를 클릭해 여러 이미지 업로드 
+      여기를 클릭해 이미지 업로드
       <input type="file" id="fileInput" accept="image/*" multiple style="display:none" />
     </div>
 
     <!-- 캔버스 및 상태 -->
-    <canvas id="canvas" style="max-width: 100%;"></canvas>
+    <canvas id="canvas"></canvas>
     <p class="text-center mt-2" id="imageStatus">이미지 0 / 0</p>
-    <div id="labelList"></div>
+    <div id="labelList" class="text-center mt-2"></div>
 
     <!-- 내비게이션 버튼 -->
-    <div class="nav-buttons mt-3">
+    <div class="nav-buttons text-center mt-3">
       <button class="btn btn-outline-secondary me-2" onclick="prevImage()">이전</button>
       <button class="btn btn-outline-secondary me-2" onclick="nextImage()">다음</button>
       <button class="btn btn-primary" onclick="downloadLabels()">YOLO 형식 저장</button>
     </div>
 
-    <!-- 썸네일 -->
-    <div id="thumbnailContainer" class="thumbnail-container mt-4"></div>
+    <!-- 썸네일 영역 -->
+    <div id="thumbnailContainer" class="thumbnail-container mt-4 text-center"></div>
 
     <!-- 예시 이미지 섹션 -->
     <div class="example-section mt-5">
-      <h5 class="text-center mb-3"> 라벨링 예시 이미지</h5>
+      <h5 class="text-center mb-3">라벨링 예시 이미지</h5>
       <div class="example-images d-flex justify-content-center gap-3">
         <img src="해파리1.png" alt="예시1" class="img-thumbnail" style="max-width: 150px;">
         <img src="해파리2.png" alt="예시2" class="img-thumbnail" style="max-width: 150px;">
         <img src="해파리3.png" alt="예시3" class="img-thumbnail" style="max-width: 150px;">
+        <img src="sargassum1.png" alt="예시4" class="img-thumbnail" style="max-width: 150px;"> <!-- ✅ 예시 추가 -->
       </div>
     </div>
   </div>
 
-  <!-- ⚠️ JSZip 로드 -->
+  <!-- JSZip -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
   <script src="script.js"></script>
 </body>

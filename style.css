@@ -104,17 +104,18 @@ canvas {
   transform: scale(1.1);
 }
 
-/* 심볼 + 타이틀 정렬 (추가된 부분) */
+/* 심볼 + 타이틀 정렬 (개선됨) */
 .app-title {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 20px; /* ✅ 이미지와 제목 사이 간격 증가 */
   margin-bottom: 32px;
 }
 
+/* 심볼 이미지 크기 및 정렬 */
 .app-title img {
-  width: 40px;
-  height: 40px;
+  width: 50px;   /* ✅ 더 선명한 크기 */
+  height: 50px;
   object-fit: contain;
 }

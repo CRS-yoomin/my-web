@@ -14,7 +14,7 @@
 <body>
   <div class="container py-4">
     
-    <!-- ✅ 심볼 + 제목 -->
+    <!-- 심볼 + 제목 -->
     <div class="app-title">
       <img src="symbol.png" alt="symbol">
       <h1 class="text-center m-0">Jellyfish YOLO Labeling Tool</h1>
@@ -59,12 +59,14 @@
         <img src="해파리1.png" alt="예시1" class="img-thumbnail" style="max-width: 150px;">
         <img src="해파리2.png" alt="예시2" class="img-thumbnail" style="max-width: 150px;">
         <img src="해파리3.png" alt="예시3" class="img-thumbnail" style="max-width: 150px;">
-        <img src="Sargassum1.png" alt="예시4" class="img-thumbnail" style="max-width: 150px;">
+        <!-- 이미지가 없거나 실패 시 디버깅용 표시 -->
+        <img src="Sargassum1.png" alt="예시4" class="img-thumbnail" style="max-width: 150px;" 
+             onerror="this.style.border='2px solid red'; this.alt='이미지 불러오기 실패';" />
       </div>
     </div>
   </div>
 
-  <!-- JSZip -->
+  <!-- JSZip + 기능 JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
   <script src="script.js"></script>
 </body>

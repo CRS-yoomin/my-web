@@ -1,9 +1,7 @@
-/* 기본 배경 및 본문 설정 */
 body {
   background-color: #f8f9fa;
 }
 
-/* 캔버스 스타일 */
 canvas {
   border: 1px solid #000;
   display: block;
@@ -13,7 +11,6 @@ canvas {
   height: auto;
 }
 
-/* 이미지 업로드 박스 */
 .upload-box {
   border: 2px dashed #aaa;
   padding: 30px;
@@ -26,26 +23,22 @@ canvas {
   margin-bottom: 20px;
 }
 
-/* 라벨 선택 */
 .label-selector {
   margin-bottom: 20px;
   text-align: center;
 }
 
-/* 박스 목록 표시 */
 #labelList {
   text-align: center;
   font-size: 0.9em;
   margin-top: 10px;
 }
 
-/* 이전/다음/저장 버튼 정렬 */
 .nav-buttons {
   text-align: center;
   margin-top: 20px;
 }
 
-/* 예시 이미지 섹션 박스 */
 .example-section {
   background-color: #ffffff;
   border-radius: 12px;
@@ -54,7 +47,6 @@ canvas {
   margin-top: 60px;
 }
 
-/* 예시 이미지 가로 스크롤 + 정렬 */
 .example-images {
   display: flex;
   gap: 12px;
@@ -63,7 +55,6 @@ canvas {
   padding-bottom: 10px;
 }
 
-/* 예시 이미지 개별 스타일 */
 .example-images img {
   width: 120px;
   height: auto;
@@ -80,7 +71,6 @@ canvas {
   border-color: #007bff;
 }
 
-/* 썸네일 컨테이너 */
 .thumbnail-container {
   display: flex;
   justify-content: center;
@@ -89,7 +79,6 @@ canvas {
   margin-top: 20px;
 }
 
-/* 썸네일 개별 이미지 */
 .thumbnail-container img {
   width: 60px;
   height: 60px;
@@ -100,13 +89,11 @@ canvas {
   transition: 0.2s;
 }
 
-/* 썸네일 선택 상태 */
 .thumbnail-container img.active {
   border-color: #0d6efd;
   transform: scale(1.1);
 }
 
-/* 심볼 + 타이틀 정렬 */
 .app-title {
   display: flex;
   align-items: center;
@@ -115,7 +102,6 @@ canvas {
   margin-bottom: 32px;
 }
 
-/* 심볼 이미지 크기 및 정렬 */
 .app-title img {
   width: 50px;
   height: 50px;

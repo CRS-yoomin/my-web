@@ -4,9 +4,7 @@ const fileInput = document.getElementById('fileInput');
 
 // ✅ 라벨 색상 정의
 const labelColors = {
-  "Aurelia aurtia": "red",
-  "Cyanea nozaki": "blue",
-  "Chrysaora pacifica": "green",
+  "Nemopilema nomurai": "red",
   "Sargassum": "orange"
 };
 const labelKeys = Object.keys(labelColors);

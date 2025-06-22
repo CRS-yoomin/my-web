@@ -291,4 +291,9 @@ ${labelKeys.map((key, idx) => `  ${idx}: ${key}`).join('\n')}
   window.prevImage = prevImage;
   window.nextImage = nextImage;
   window.downloadLabels = downloadLabels;
+
+  // 버튼과 직접 연결 (추가 안전 처리)
+  document.querySelector('button.btn-outline-secondary:nth-child(1)').addEventListener('click', prevImage);
+  document.querySelector('button.btn-outline-secondary:nth-child(2)').addEventListener('click', nextImage);
+  document.querySelector('button.btn-primary').addEventListener('click', downloadLabels);
 });

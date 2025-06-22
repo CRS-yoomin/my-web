@@ -31,10 +31,11 @@
     <p class="text-center mt-2" id="imageStatus">이미지 0 / 0</p>
     <div id="labelList" class="text-center mt-2"></div>
 
+    <!-- ✅ ID 부여하고 onclick 제거 -->
     <div class="nav-buttons text-center">
-      <button class="btn btn-outline-secondary me-2" onclick="prevImage()">이전</button>
-      <button class="btn btn-outline-secondary me-2" onclick="nextImage()">다음</button>
-      <button class="btn btn-primary" onclick="downloadLabels()">YOLO 형식 저장</button>
+      <button id="prevBtn" class="btn btn-outline-secondary me-2">이전</button>
+      <button id="nextBtn" class="btn btn-outline-secondary me-2">다음</button>
+      <button id="saveBtn" class="btn btn-primary">YOLO 형식 저장</button>
     </div>
 
     <div id="thumbnailContainer" class="thumbnail-container text-center"></div>

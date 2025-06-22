@@ -27,20 +27,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function loadImage(index) {
     if (!imageFiles[index]) return;
+
     const reader = new FileReader();
-    reader.onload = (e) => image.src = e.target.result;
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        image = img;
+        canvas.width = image.naturalWidth;
+        canvas.height = image.naturalHeight;
+        boxes = boxesPerImage[index] || [];
+        drawAll();
+        updateLabelList();
+        updateStatus();
+        highlightThumbnail();
+      };
+      img.src = e.target.result;
+    };
     reader.readAsDataURL(imageFiles[index]);
   }
-
-  image.onload = () => {
-    canvas.width = image.naturalWidth;
-    canvas.height = image.naturalHeight;
-    boxes = boxesPerImage[currentIndex];
-    drawAll();
-    updateLabelList();
-    updateStatus();
-    highlightThumbnail();
-  };
 
   function prevImage() {
     saveCurrentBoxes();

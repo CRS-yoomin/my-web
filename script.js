@@ -286,4 +286,9 @@ ${labelKeys.map((key, idx) => `  ${idx}: ${key}`).join('\n')}
       a.click();
     });
   }
+
+  // 전역 스코프에 함수 연결
+  window.prevImage = prevImage;
+  window.nextImage = nextImage;
+  window.downloadLabels = downloadLabels;
 });
